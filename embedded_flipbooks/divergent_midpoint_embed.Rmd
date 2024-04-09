@@ -1,0 +1,86 @@
+---
+title: "divergent midpoint"
+subtitle: ""
+author: ""
+output:
+  xaringan::moon_reader:
+    seal: FALSE
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+
+```{r, include = F}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+load("current_image.Rdata")
+```
+
+
+```{r, echo = F, eval = FALSE , message = F, warning = F}
+xaringanExtra::use_share_again()
+```
+
+
+```{r the_chunk, include = F}
+my_pal <- c("dodgerblue", "deepskyblue", "grey", 
+            "hotpink", "deeppink") 
+
+ggplot(mpg) + 
+  aes(displ, hwy, colour = cty - mean(cty)) +
+  geom_point() +
+  labs(
+    x = "Engine displacement [L]",
+    y = "Highway miles per gallon",
+    colour = "Mean-\ncentered\nvalue"
+  ) + 
+  scale_colour_gradientn(
+    colours = my_pal, 
+  ) +
+  # opt 1 center
+  scale_colour_gradientn(
+    colours = my_pal, 
+    rescaler = ~ scales::rescale_mid(.x, mid = 0) 
+  ) +
+  # opt 2 center limits
+  scale_colour_gradientn(
+    colours = my_pal, 
+    limits = ~ c(-1, 1) * max(abs(.x)) # opt 2 center limits
+  )
+
+```
+
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto")`
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+

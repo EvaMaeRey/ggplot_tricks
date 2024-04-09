@@ -1,0 +1,89 @@
+---
+title: "splice colour"
+subtitle: ""
+author: ""
+output:
+  xaringan::moon_reader:
+    seal: FALSE
+    lib_dir: libs
+    css: [default, hygge, ninjutsu]
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+
+```{r, include = F}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+load("current_image.Rdata")
+```
+
+
+```{r, echo = F, eval = FALSE , message = F, warning = F}
+xaringanExtra::use_share_again()
+```
+
+
+```{r the_chunk, include = F}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(shape = 21, size = 6) +
+  aes(colour = factor(cyl)) + 
+  # fill directly using variable
+  aes(fill = hwy) + 
+  # fill based on existing scale color
+  aes(fill = after_scale(alpha(colour, 0.3))) ->
+p
+
+# or reusably
+aes(fill = after_scale(alpha(colour, 0.3))) ->
+  aes_fill_transparent_after_color
+
+ggplot(mpg) +
+  aes(x = displ, y = hwy, 
+      colour = factor(cyl), 
+      !!!aes_fill_transparent_after_color) +
+  geom_point(shape = 21, size = 6) ->
+p2
+
+
+# aes can be applied independently 
+# so following also works
+ggplot(mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(shape = 21, size = 6) + 
+  aes_fill_transparent_after_color + 
+  aes(colour = factor(cyl)) 
+```
+
+`r chunk_reveal(chunk_name = "the_chunk", break_type = "auto")`
+
+
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
