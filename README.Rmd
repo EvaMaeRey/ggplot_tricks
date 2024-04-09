@@ -16,10 +16,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggplot tricks
+# lightly reworking Teun van den Brand's *ggplot tricks* code (text is original)
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+
 
 The goal of this repository is to keep track of some neat [ggplot2](https://ggplot2.tidyverse.org/) tricks I've learned. This assumes you've familiarised yourself with the basics of ggplot2 and can construct some nice plots of your own. If not, please peruse the [book](https://ggplot2-book.org/) at your leasure.
 
@@ -87,12 +89,29 @@ Well it means that you can compose the `mapping` argument on the go with `!!!`.
 This is especially nifty if you need to recycle aesthetics every once in a while.
 
 ```{r splice_aes}
+library(ggplot2)
 my_xy_mapping <- aes(x = speed, y = dist)
 
-ggplot(data = cars) + 
+p <- ggplot(data = cars) + 
   aes(color = speed > 15, 
       !!!my_xy_mapping) + 
   geom_point(size = 6)
+  
+
+# also...
+q <- ggplot(data = cars) + 
+  aes(color = speed > 15) + 
+  my_xy_mapping +
+  geom_point(size = 6) 
+
+
+identical(p,q)
+p
+q
+
+#waldo::compare(p,q)
+
+
 ```
 
 ### Relating colour and fill
@@ -116,13 +135,6 @@ p;p
 # or reusably
 aes(fill = after_scale(alpha(colour, 0.3))) ->
   aes_fill_transparent_after_color
-
-ggplot(mpg) +
-  aes(x = displ, y = hwy, 
-      colour = factor(cyl), 
-      !!!aes_fill_transparent_after_color) +
-  geom_point(shape = 21)
-
 
 # aes can be applied independently so following also works
 ggplot(mpg) +
@@ -336,7 +348,7 @@ There are several typical solutions to this problem, and they all come with draw
 
 Here are options 2 and 3 in action:
 
-```{r scatterplot_text_2, fig.show='hold'}
+```{r scatterplot_text_2, fig.show='hold', eval = F}
 q + geom_text(nudge_x = 1, nudge_y = 1)
 
 q + geom_text(aes(
@@ -348,7 +360,7 @@ q + geom_text(aes(
 You might think: 'I can just multiply the justifications to get a wider offset', and you'd be right.
 However, because the justification depends on the size of text you might get unequal offsets. Notice in the plot below that 'North Dakota' is offset too munch in the y-direction and 'Rhode Island' in the x-direction.
 
-```{r scatterplot_text_3}
+```{r scatterplot_text_3, eval = F}
 q + geom_text(aes(
   label = gsub("North Dakota", "North\nDakota", state),
   hjust = ((Murder > mean(Murder)) - 0.5) * 1.5 + 0.5,
@@ -358,7 +370,7 @@ q + geom_text(aes(
 
 The nice thing of `geom_label()` is that you can turn off the label box and keep the text. That way, you can continue to use other useful stuff, like the `label.padding` setting, to give an absolute (data-independent) offset from the text to the label.
 
-```{r scatterplot_label}
+```{r scatterplot_label, eval = F}
 q + geom_label(
   aes(
     label = gsub(" ", "\n", state),

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggplot tricks
+# lightly reworking Teun van den Brand’s *ggplot tricks* code (text is original)
 
 <!-- badges: start -->
 
@@ -92,15 +92,39 @@ especially nifty if you need to recycle aesthetics every once in a
 while.
 
 ``` r
+library(ggplot2)
 my_xy_mapping <- aes(x = speed, y = dist)
 
-ggplot(data = cars) + 
+p <- ggplot(data = cars) + 
   aes(color = speed > 15, 
       !!!my_xy_mapping) + 
   geom_point(size = 6)
+  
+
+# also...
+q <- ggplot(data = cars) + 
+  aes(color = speed > 15) + 
+  my_xy_mapping +
+  geom_point(size = 6) 
+
+
+identical(p,q)
+#> [1] FALSE
+p
 ```
 
 <img src="man/figures/README-splice_aes-1.png" width="80%" style="display: block; margin: auto;" />
+
+``` r
+q
+```
+
+<img src="man/figures/README-splice_aes-2.png" width="80%" style="display: block; margin: auto;" />
+
+``` r
+
+#waldo::compare(p,q)
+```
 
 ### Relating colour and fill
 
@@ -129,18 +153,6 @@ p;p
 aes(fill = after_scale(alpha(colour, 0.3))) ->
   aes_fill_transparent_after_color
 
-ggplot(mpg) +
-  aes(x = displ, y = hwy, 
-      colour = factor(cyl), 
-      !!!aes_fill_transparent_after_color) +
-  geom_point(shape = 21)
-```
-
-<img src="man/figures/README-splice_colour-2.png" width="80%" style="display: block; margin: auto;" />
-
-``` r
-
-
 # aes can be applied independently so following also works
 ggplot(mpg) +
   aes(x = displ, y = hwy) +
@@ -149,7 +161,7 @@ ggplot(mpg) +
   aes(colour = factor(cyl))
 ```
 
-<img src="man/figures/README-splice_colour-3.png" width="80%" style="display: block; margin: auto;" />
+<img src="man/figures/README-splice_colour-2.png" width="80%" style="display: block; margin: auto;" />
 
 ### Text contrast
 
@@ -444,13 +456,11 @@ Here are options 2 and 3 in action:
 
 ``` r
 q + geom_text(nudge_x = 1, nudge_y = 1)
-#> NULL
 
 q + geom_text(aes(
   hjust = Murder > mean(Murder),
   vjust = Rape > mean(Rape)
 ))
-#> NULL
 ```
 
 You might think: ‘I can just multiply the justifications to get a wider
@@ -465,7 +475,6 @@ q + geom_text(aes(
   hjust = ((Murder > mean(Murder)) - 0.5) * 1.5 + 0.5,
   vjust = ((Rape > mean(Rape)) - 0.5) * 3 + 0.5
 ))
-#> NULL
 ```
 
 The nice thing of `geom_label()` is that you can turn off the label box
@@ -483,7 +492,6 @@ q + geom_label(
   label.padding = unit(5, "pt"),
   label.size = NA, fill = NA
 )
-#> NULL
 ```
 
 ### Facetted tags
