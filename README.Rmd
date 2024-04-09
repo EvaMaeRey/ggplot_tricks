@@ -103,7 +103,7 @@ I'll repeat this trick a couple of times throughout this document.
 
 [^myfill]: This is a lie. In reality, I use `aes(colour = after_scale(colorspace::darken(fill, 0.3)))` instead of lightening the fill. I didn't want this README to have a dependency on {colorspace} though.
 
-```{r, splice_colour}
+```{r splice_colour}
 ggplot(mpg, aes(displ, hwy)) +
   geom_point(shape = 21) +
   aes(colour = factor(cyl)) + 
