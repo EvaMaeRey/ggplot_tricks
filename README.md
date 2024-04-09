@@ -92,12 +92,12 @@ especially nifty if you need to recycle aesthetics every once in a
 while.
 
 ``` r
-my_mapping <- aes(x = speed, y = dist)
+my_xy_mapping <- aes(x = speed, y = dist)
 
 ggplot(data = cars) + 
   aes(color = speed > 15, 
-      !!!my_mapping) + 
-  geom_point()
+      !!!my_xy_mapping) + 
+  geom_point(size = 6)
 ```
 
 <img src="man/figures/README-splice_aes-1.png" width="80%" style="display: block; margin: auto;" />
@@ -125,14 +125,14 @@ p;p
 
 ``` r
 
-# or reusable
+# or reusably
 aes(fill = after_scale(alpha(colour, 0.3))) ->
-  fill_after_color0.3
+  aes_fill_transparent_after_color
 
 ggplot(mpg) +
   aes(x = displ, y = hwy, 
       colour = factor(cyl), 
-      !!!fill_after_color0.3) +
+      !!!aes_fill_transparent_after_color) +
   geom_point(shape = 21)
 ```
 
@@ -145,7 +145,7 @@ ggplot(mpg) +
 ggplot(mpg) +
   aes(x = displ, y = hwy) +
   geom_point(shape = 21) + 
-  fill_after_color0.3 + 
+  aes_fill_transparent_after_color + 
   aes(colour = factor(cyl))
 ```
 
@@ -170,15 +170,15 @@ of conditional formatting for this.
 
 ``` r
 contrast <- function(colour) {
-  out   <- rep("black", length(colour))
+  out   <- rep("grey20", length(colour))
   light <- farver::get_channel(colour, "l", 
                                space = "hcl")
-  out[light < 50] <- "white"
+  out[light < 50] <- "grey80"
   out
 }
 
 aes(colour = after_scale(contrast(fill))) ->
-  autocontrast
+  aes_colour_autocontrast_after_fill
 
 library(tidyverse)
 #> ── Attaching core tidyverse packages ─────────────────── tidyverse 2.0.0.9000 ──
@@ -201,7 +201,7 @@ cor(mtcars) |>
   aes(fill = value) + 
   geom_text(aes(label = round(value, 2)), size = 3) +
   coord_equal() +
-  autocontrast + 
+  aes_colour_autocontrast_after_fill + 
   scale_fill_viridis_c(direction =  1) +
   scale_fill_viridis_c(direction = -1)
 #> Scale for fill is already present.
@@ -235,7 +235,7 @@ ggplot() +
   geom_boxplot() + 
   aes(xmin = after_scale(x)) +
   # make it pretty
-  fill_after_color0.3 +
+  aes_fill_transparent_after_color +
   labs(y = "Engine Displacement [L]", x = "Type of car") +
   guides(colour = "none", fill = "none") 
 ```
@@ -599,7 +599,7 @@ barplot_fun <- function(data, ...) {
     theme(panel.grid.major.x = element_blank())
 }
 
-barplot_fun(mpg, class, colour = factor(cyl), !!!fill_after_color0.3)
+barplot_fun(mpg, class, colour = factor(cyl), !!!aes_fill_transparent_after_color)
 ```
 
 <img src="man/figures/README-barplot_fun_ellipsis-1.png" width="80%" style="display: block; margin: auto;" />
@@ -620,7 +620,8 @@ barplot_skelly <- ggplot() +
   theme(panel.grid.major.x = element_blank())
 
 my_plot <- barplot_skelly %+% mpg + 
-  aes(class, colour = factor(cyl), !!!fill_after_color0.3) 
+  aes(class, colour = factor(cyl),
+      !!!aes_fill_transparent_after_color) 
 my_plot
 ```
 
@@ -633,7 +634,8 @@ again and again.
 ``` r
 my_plot %+% 
   mtcars + 
-  aes(factor(carb), colour = factor(cyl), !!!fill_after_color0.3)
+  aes(factor(carb), colour = factor(cyl),
+      !!!aes_fill_transparent_after_color)
 ```
 
 <img src="man/figures/README-barplot_skelly_replace-1.png" width="80%" style="display: block; margin: auto;" />
@@ -649,7 +651,8 @@ together with the main plot call.
 
 ``` r
 labelled_bars <- list(
-  geom_bar(fill_after_color0.3, width = 0.618),
+  geom_bar(aes_fill_transparent_after_color, 
+           width = 0.618),
   geom_text(
     stat = "count",
     aes(y     = after_stat(count), 
